@@ -54,7 +54,6 @@
         [alertView close];
     }];
     
-    [alertView setUseMotionEffects:true];
 
     // And launch the dialog
     [alertView show];

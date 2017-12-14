@@ -15,7 +15,6 @@
 const static CGFloat kCustomIOSAlertViewDefaultButtonHeight       = 50;
 const static CGFloat kCustomIOSAlertViewDefaultButtonSpacerHeight = 1;
 const static CGFloat kCustomIOSAlertViewCornerRadius              = 7;
-const static CGFloat kCustomIOS7MotionEffectExtent                = 10.0;
 
 @implementation CustomIOSAlertView
 
@@ -25,7 +24,6 @@ CGFloat buttonSpacerHeight = 0;
 @synthesize parentView, containerView, dialogView, onButtonTouchUpInside;
 @synthesize delegate;
 @synthesize buttonTitles;
-@synthesize useMotionEffects;
 @synthesize closeOnTouchUpOutside;
 
 - (id)initWithParentView: (UIView *)_parentView
@@ -45,7 +43,6 @@ CGFloat buttonSpacerHeight = 0;
         self.frame = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
 
         delegate = self;
-        useMotionEffects = false;
         closeOnTouchUpOutside = false;
         buttonTitles = @[@"Close"];
         
@@ -68,12 +65,6 @@ CGFloat buttonSpacerHeight = 0;
   
     self.layer.shouldRasterize = YES;
     self.layer.rasterizationScale = [[UIScreen mainScreen] scale];
-
-#if (defined(__IPHONE_7_0))
-    if (useMotionEffects) {
-        [self applyMotionEffects];
-    }
-#endif
 
     self.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0];
 
@@ -307,31 +298,6 @@ CGFloat buttonSpacerHeight = 0;
     
     return CGSizeMake(screenWidth, screenHeight);
 }
-
-#if (defined(__IPHONE_7_0))
-// Add motion effects
-- (void)applyMotionEffects {
-
-    if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1) {
-        return;
-    }
-
-    UIInterpolatingMotionEffect *horizontalEffect = [[UIInterpolatingMotionEffect alloc] initWithKeyPath:@"center.x"
-                                                                                                    type:UIInterpolatingMotionEffectTypeTiltAlongHorizontalAxis];
-    horizontalEffect.minimumRelativeValue = @(-kCustomIOS7MotionEffectExtent);
-    horizontalEffect.maximumRelativeValue = @( kCustomIOS7MotionEffectExtent);
-
-    UIInterpolatingMotionEffect *verticalEffect = [[UIInterpolatingMotionEffect alloc] initWithKeyPath:@"center.y"
-                                                                                                  type:UIInterpolatingMotionEffectTypeTiltAlongVerticalAxis];
-    verticalEffect.minimumRelativeValue = @(-kCustomIOS7MotionEffectExtent);
-    verticalEffect.maximumRelativeValue = @( kCustomIOS7MotionEffectExtent);
-
-    UIMotionEffectGroup *motionEffectGroup = [[UIMotionEffectGroup alloc] init];
-    motionEffectGroup.motionEffects = @[horizontalEffect, verticalEffect];
-
-    [dialogView addMotionEffect:motionEffectGroup];
-}
-#endif
 
 - (void)dealloc
 {
