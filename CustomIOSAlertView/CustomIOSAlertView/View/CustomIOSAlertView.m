@@ -46,9 +46,9 @@ CGFloat buttonSpacerHeight = 0;
         closeOnTouchUpOutside = false;
         buttonTitles = @[@"Close"];
         
-        [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+//        [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
 
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
+//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
     }
@@ -79,30 +79,29 @@ CGFloat buttonSpacerHeight = 0;
     } else {
 
         // On iOS7, calculate with orientation
-        if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_7_1) {
-            
-            UIInterfaceOrientation interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
-            switch (interfaceOrientation) {
-                case UIInterfaceOrientationLandscapeLeft:
-                    self.transform = CGAffineTransformMakeRotation(M_PI * 270.0 / 180.0);
-                    break;
-                    
-                case UIInterfaceOrientationLandscapeRight:
-                    self.transform = CGAffineTransformMakeRotation(M_PI * 90.0 / 180.0);
-                    break;
-                    
-                case UIInterfaceOrientationPortraitUpsideDown:
-                    self.transform = CGAffineTransformMakeRotation(M_PI * 180.0 / 180.0);
-                    break;
-                    
-                default:
-                    break;
-            }
-            
-            [self setFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
+//        if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_7_1) {
+//
+//            UIInterfaceOrientation interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+//            switch (interfaceOrientation) {
+//                case UIInterfaceOrientationLandscapeLeft:
+//                    self.transform = CGAffineTransformMakeRotation(M_PI * 270.0 / 180.0);
+//                    break;
+//
+//                case UIInterfaceOrientationLandscapeRight:
+//                    self.transform = CGAffineTransformMakeRotation(M_PI * 90.0 / 180.0);
+//                    break;
+//
+//                case UIInterfaceOrientationPortraitUpsideDown:
+//                    self.transform = CGAffineTransformMakeRotation(M_PI * 180.0 / 180.0);
+//                    break;
+//
+//                default:
+//                    break;
+//            }
+//
+//            [self setFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
 
         // On iOS8, just place the dialog in the middle
-        } else {
 
             CGSize screenSize = [self countScreenSize];
             CGSize dialogSize = [self countDialogSize];
@@ -110,7 +109,6 @@ CGFloat buttonSpacerHeight = 0;
 
             dialogView.frame = CGRectMake((screenSize.width - dialogSize.width) / 2, (screenSize.height - keyboardSize.height - dialogSize.height) / 2, dialogSize.width, dialogSize.height);
 
-        }
 
         [[[[UIApplication sharedApplication] windows] firstObject] addSubview:self];
     }
@@ -286,97 +284,97 @@ CGFloat buttonSpacerHeight = 0;
     CGFloat screenWidth = [UIScreen mainScreen].bounds.size.width;
     CGFloat screenHeight = [UIScreen mainScreen].bounds.size.height;
 
-    // On iOS7, screen width and height doesn't automatically follow orientation
-    if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_7_1) {
-        UIInterfaceOrientation interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
-        if (UIInterfaceOrientationIsLandscape(interfaceOrientation)) {
-            CGFloat tmp = screenWidth;
-            screenWidth = screenHeight;
-            screenHeight = tmp;
-        }
-    }
+//    // On iOS7, screen width and height doesn't automatically follow orientation
+//    if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_7_1) {
+//        UIInterfaceOrientation interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+//        if (UIInterfaceOrientationIsLandscape(interfaceOrientation)) {
+//            CGFloat tmp = screenWidth;
+//            screenWidth = screenHeight;
+//            screenHeight = tmp;
+//        }
+//    }
     
     return CGSizeMake(screenWidth, screenHeight);
 }
 
 - (void)dealloc
 {
-    [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
+//    [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
 
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
+//    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
 }
-
-// Rotation changed, on iOS7
-- (void)changeOrientationForIOS7 {
-
-    UIInterfaceOrientation interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
-    
-    CGFloat startRotation = [[self valueForKeyPath:@"layer.transform.rotation.z"] floatValue];
-    CGAffineTransform rotation;
-    
-    switch (interfaceOrientation) {
-        case UIInterfaceOrientationLandscapeLeft:
-            rotation = CGAffineTransformMakeRotation(-startRotation + M_PI * 270.0 / 180.0);
-            break;
-            
-        case UIInterfaceOrientationLandscapeRight:
-            rotation = CGAffineTransformMakeRotation(-startRotation + M_PI * 90.0 / 180.0);
-            break;
-            
-        case UIInterfaceOrientationPortraitUpsideDown:
-            rotation = CGAffineTransformMakeRotation(-startRotation + M_PI * 180.0 / 180.0);
-            break;
-            
-        default:
-            rotation = CGAffineTransformMakeRotation(-startRotation + 0.0);
-            break;
-    }
-
-    [UIView animateWithDuration:0.2f delay:0.0 options:UIViewAnimationOptionTransitionNone
-                     animations:^{
-                         dialogView.transform = rotation;
-                         
-                     }
-                     completion:nil
-     ];
-    
-}
-
-// Rotation changed, on iOS8
-- (void)changeOrientationForIOS8: (NSNotification *)notification {
-
-    CGFloat screenWidth = [UIScreen mainScreen].bounds.size.width;
-    CGFloat screenHeight = [UIScreen mainScreen].bounds.size.height;
-
-    [UIView animateWithDuration:0.2f delay:0.0 options:UIViewAnimationOptionTransitionNone
-                     animations:^{
-                         CGSize dialogSize = [self countDialogSize];
-                         CGSize keyboardSize = [[[notification userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
-                         self.frame = CGRectMake(0, 0, screenWidth, screenHeight);
-                         dialogView.frame = CGRectMake((screenWidth - dialogSize.width) / 2, (screenHeight - keyboardSize.height - dialogSize.height) / 2, dialogSize.width, dialogSize.height);
-                     }
-                     completion:nil
-     ];
-    
-
-}
+//
+//// Rotation changed, on iOS7
+//- (void)changeOrientationForIOS7 {
+//
+//    UIInterfaceOrientation interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+//
+//    CGFloat startRotation = [[self valueForKeyPath:@"layer.transform.rotation.z"] floatValue];
+//    CGAffineTransform rotation;
+//
+//    switch (interfaceOrientation) {
+//        case UIInterfaceOrientationLandscapeLeft:
+//            rotation = CGAffineTransformMakeRotation(-startRotation + M_PI * 270.0 / 180.0);
+//            break;
+//
+//        case UIInterfaceOrientationLandscapeRight:
+//            rotation = CGAffineTransformMakeRotation(-startRotation + M_PI * 90.0 / 180.0);
+//            break;
+//
+//        case UIInterfaceOrientationPortraitUpsideDown:
+//            rotation = CGAffineTransformMakeRotation(-startRotation + M_PI * 180.0 / 180.0);
+//            break;
+//
+//        default:
+//            rotation = CGAffineTransformMakeRotation(-startRotation + 0.0);
+//            break;
+//    }
+//
+//    [UIView animateWithDuration:0.2f delay:0.0 options:UIViewAnimationOptionTransitionNone
+//                     animations:^{
+//                         dialogView.transform = rotation;
+//
+//                     }
+//                     completion:nil
+//     ];
+//
+//}
+//
+//// Rotation changed, on iOS8
+//- (void)changeOrientationForIOS8: (NSNotification *)notification {
+//
+//    CGFloat screenWidth = [UIScreen mainScreen].bounds.size.width;
+//    CGFloat screenHeight = [UIScreen mainScreen].bounds.size.height;
+//
+//    [UIView animateWithDuration:0.2f delay:0.0 options:UIViewAnimationOptionTransitionNone
+//                     animations:^{
+//                         CGSize dialogSize = [self countDialogSize];
+//                         CGSize keyboardSize = [[[notification userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+//                         self.frame = CGRectMake(0, 0, screenWidth, screenHeight);
+//                         dialogView.frame = CGRectMake((screenWidth - dialogSize.width) / 2, (screenHeight - keyboardSize.height - dialogSize.height) / 2, dialogSize.width, dialogSize.height);
+//                     }
+//                     completion:nil
+//     ];
+//
+//
+//}
 
 // Handle device orientation changes
-- (void)deviceOrientationDidChange: (NSNotification *)notification
-{
-    // If dialog is attached to the parent view, it probably wants to handle the orientation change itself
-    if (parentView != NULL) {
-        return;
-    }
-
-    if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_7_1) {
-        [self changeOrientationForIOS7];
-    } else {
-        [self changeOrientationForIOS8:notification];
-    }
-}
+//- (void)deviceOrientationDidChange: (NSNotification *)notification
+//{
+//    // If dialog is attached to the parent view, it probably wants to handle the orientation change itself
+//    if (parentView != NULL) {
+//        return;
+//    }
+//
+//    if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_7_1) {
+//        [self changeOrientationForIOS7];
+//    } else {
+//        [self changeOrientationForIOS8:notification];
+//    }
+//}
 
 // Handle keyboard show/hide changes
 - (void)keyboardWillShow: (NSNotification *)notification
